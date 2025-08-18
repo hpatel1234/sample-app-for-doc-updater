@@ -1,0 +1,24 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>dist</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>744</fileMode>
+            <directoryMode>755</directoryMode>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <directory>deploy/scripts</directory>
+        </fileSet>
+    </fileSets>
+</assembly>
