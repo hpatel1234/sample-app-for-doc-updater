@@ -1,3 +1,3 @@
-buildPipeline {
-  "enableAutoDocumentation": true
+buildPipeline{
+  enableAutoDocumentation = true
 }
