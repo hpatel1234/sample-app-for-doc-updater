@@ -1,0 +1,3 @@
+buildPipeline {
+  "enableAutoDocumentation": true
+}
