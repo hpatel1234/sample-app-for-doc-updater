@@ -1,3 +1,5 @@
 javalang
 argparse
 neomodel
+mistralai
+itertools
