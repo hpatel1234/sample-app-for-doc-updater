@@ -4,7 +4,7 @@ import argparse
 from neomodel import StructuredNode, StringProperty, RelationshipTo, RelationshipFrom, config, db
 
 # Neo4j config (set via env or directly)
-config.DATABASE_URL = "neo4j://neo4j:neo4j123@localhost:7687"
+config.DATABASE_URL = "bolt://neo4j:neo4j123@neo4j-instance:7687"
 config.DATABASE_NAME ="neo4j"
 
 def clear_existing_graph():
