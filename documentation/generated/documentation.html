@@ -1,0 +1,96 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformation Logic Documentation</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Transformation Logic Documentation</h1>
+
+<h2>Final Output Attributes</h2>
+<table>
+    <tr>
+        <th>Output Attribute</th>
+        <th>Input Attributes Used</th>
+        <th>Transformation Logic</th>
+        <th>Static Mappings Used</th>
+        <th>Extra Information</th>
+    </tr>
+    <tr>
+        <td>Participants</td>
+        <td>Employee.FirstName, Employee.LastName</td>
+        <td>
+            Concatenate first name and last name of each employee to form a list of participants.
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Lob</td>
+        <td>Employee.LineOfBusiness</td>
+        <td>
+            Set the Line of Business from the first employee in the list.
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>OrgUnit</td>
+        <td>Employee.Country</td>
+        <td>
+            Set the Organizational Unit from the first employee in the list.
+        </td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>AssetClass</td>
+        <td>Employee.RptL3Descr, Employee.RptL4Descr, Employee.RptL5Descr</td>
+        <td>
+            Determine the asset class based on the hierarchy of RptL5Descr, RptL4Descr, and RptL3Descr. If RptL5Descr is not blank, use it to get the asset class from the mappings. If RptL5Descr is blank, check RptL4Descr, and so on. If all are blank, default to "TREASURE".
+        </td>
+        <td>{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
+        <td></td>
+    </tr>
+</table>
+
+<h2>Intermediate Transformations</h2>
+<table>
+    <tr>
+        <th>Intermediate Output</th>
+        <th>Input Attributes Used</th>
+        <th>Intermediate Transformation Logic</th>
+        <th>Used in Final Output Attribute</th>
+    </tr>
+    <tr>
+        <td>Employees</td>
+        <td>DerivativeTradeDto.Employees</td>
+        <td>
+            For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.
+        </td>
+        <td>Participants, Lob, OrgUnit, AssetClass</td>
+    </tr>
+</table>
+
+</body>
+</html>
+```
