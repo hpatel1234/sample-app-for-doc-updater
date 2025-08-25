@@ -23,64 +23,62 @@
     </style>
 </head>
 <body>
+    <h1>Transformation Logic Documentation</h1>
 
-<h1>Transformation Logic Documentation</h1>
+    <h2>Final Output Attributes</h2>
+    <table>
+        <tr>
+            <th>Output Attribute</th>
+            <th>Input Attributes Used</th>
+            <th>Transformation Logic</th>
+            <th>Static Mappings Used</th>
+            <th>Extra Information</th>
+        </tr>
+        <tr>
+            <td>Participants</td>
+            <td>Employee.firstName, Employee.lastName</td>
+            <td>Concatenate first name and last name of each employee to form a list of participants.</td>
+            <td>{}</td>
+            <td>The participants list is only populated if the employees list is not empty.</td>
+        </tr>
+        <tr>
+            <td>Lob</td>
+            <td>Employee.lineOfBusiness</td>
+            <td>Set the line of business from the first employee in the list.</td>
+            <td>{}</td>
+            <td>The lob is only set if the employees list is not empty.</td>
+        </tr>
+        <tr>
+            <td>OrgUnit</td>
+            <td>Employee.country</td>
+            <td>Set the country from the first employee in the list.</td>
+            <td>{}</td>
+            <td>The orgUnit is only set if the employees list is not empty.</td>
+        </tr>
+        <tr>
+            <td>AssetClass</td>
+            <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
+            <td>Determine the asset class based on the hierarchy of rptL5Descr, rptL4Descr, and rptL3Descr. If rptL5Descr is not blank, use it to get the asset class from the mappings. If rptL5Descr is blank, check rptL4Descr, and so on. If all are blank, default to "TREASURE".</td>
+            <td>{ "mss": "Markets Security", "rc": "Risk and compliance" }</td>
+            <td>The asset class is only set if the employees list is not empty.</td>
+        </tr>
+    </table>
 
-<h2>Final Output Attributes</h2>
-<table>
-    <tr>
-        <th>Output Attribute</th>
-        <th>Input Attributes Used</th>
-        <th>Transformation Logic</th>
-        <th>Static Mappings Used</th>
-        <th>Extra Information</th>
-    </tr>
-    <tr>
-        <td>Participants</td>
-        <td>Employee.firstName, Employee.lastName</td>
-        <td>Concatenate the first name and last name of each employee in the list to form a list of participant names.</td>
-        <td>{}</td>
-        <td>The participants list is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>Lob</td>
-        <td>Employee.lineOfBusiness</td>
-        <td>Set the line of business from the first employee in the list.</td>
-        <td>{}</td>
-        <td>The lob is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>OrgUnit</td>
-        <td>Employee.country</td>
-        <td>Set the country from the first employee in the list.</td>
-        <td>{}</td>
-        <td>The orgUnit is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>AssetClass</td>
-        <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
-        <td>Determine the asset class based on the rptL5Descr, rptL4Descr, and rptL3Descr fields of the first employee in the list, in that order of priority. If none of these fields are present, default to "TREASURE".</td>
-        <td>{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
-        <td>The asset class is set in the domain model if the employees list is not empty.</td>
-    </tr>
-</table>
-
-<h2>Intermediate Transformations</h2>
-<table>
-    <tr>
-        <th>Intermediate Output</th>
-        <th>Input Attributes Used</th>
-        <th>Intermediate Transformation Logic</th>
-        <th>Used in Final Output Attribute</th>
-    </tr>
-    <tr>
-        <td>Employees</td>
-        <td>DerivativeTradeDto.employees</td>
-        <td>For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.</td>
-        <td>Participants, Lob, OrgUnit, AssetClass</td>
-    </tr>
-</table>
-
+    <h2>Intermediate Transformations</h2>
+    <table>
+        <tr>
+            <th>Intermediate Output</th>
+            <th>Input Attributes Used</th>
+            <th>Intermediate Transformation Logic</th>
+            <th>Used in Final Output Attribute</th>
+        </tr>
+        <tr>
+            <td>Employees</td>
+            <td>DerivativeTradeDto.employees</td>
+            <td>For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.</td>
+            <td>Participants, Lob, OrgUnit, AssetClass</td>
+        </tr>
+    </table>
 </body>
 </html>
 ```
