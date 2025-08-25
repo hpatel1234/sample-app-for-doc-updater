@@ -14,7 +14,7 @@
             border: 1px solid black;
         }
         th, td {
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
         th {
@@ -38,30 +38,30 @@
     <tr>
         <td>Participants</td>
         <td>Employee.firstName, Employee.lastName</td>
-        <td>Concatenate the first name and last name of each employee in the list to form a list of participant names.</td>
+        <td>Concatenate first name and last name of each employee to form a list of participants.</td>
         <td>{}</td>
-        <td>The participants list is set in the domain model if the employees list is not empty.</td>
+        <td>The transformation is only performed if the list of employees is not empty.</td>
     </tr>
     <tr>
-        <td>Lob</td>
+        <td>LOB (Line of Business)</td>
         <td>Employee.lineOfBusiness</td>
-        <td>Set the line of business from the first employee in the list.</td>
+        <td>Set the LOB from the first employee in the list.</td>
         <td>{}</td>
-        <td>The lob is set in the domain model if the employees list is not empty.</td>
+        <td>The transformation is only performed if the list of employees is not empty.</td>
     </tr>
     <tr>
-        <td>OrgUnit</td>
+        <td>Org Unit</td>
         <td>Employee.country</td>
-        <td>Set the country from the first employee in the list.</td>
+        <td>Set the Org Unit from the first employee in the list.</td>
         <td>{}</td>
-        <td>The orgUnit is set in the domain model if the employees list is not empty.</td>
+        <td>The transformation is only performed if the list of employees is not empty.</td>
     </tr>
     <tr>
-        <td>AssetClass</td>
+        <td>Asset Class</td>
         <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
-        <td>Determine the asset class based on the rptL5Descr, rptL4Descr, and rptL3Descr fields of the first employee in the list, in that order of priority. If none of these fields are present, default to "TREASURE".</td>
+        <td>Determine the asset class based on the first non-blank value from rptL5Descr, rptL4Descr, or rptL3Descr, in that order. If all are blank, default to "TREASURE".</td>
         <td>{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
-        <td>The asset class is set in the domain model if the employees list is not empty.</td>
+        <td>The transformation is only performed if the list of employees is not empty.</td>
     </tr>
 </table>
 
@@ -76,8 +76,14 @@
     <tr>
         <td>Employees</td>
         <td>DerivativeTradeDto.employees</td>
-        <td>For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.</td>
-        <td>Participants, Lob, OrgUnit, AssetClass</td>
+        <td>Fetch employee details using employee IDs from the DTO. If an employee is not found, throw an exception.</td>
+        <td>Participants, LOB, Org Unit, Asset Class</td>
+    </tr>
+    <tr>
+        <td>Asset Class</td>
+        <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
+        <td>Determine the asset class based on the first non-blank value from rptL5Descr, rptL4Descr, or rptL3Descr, in that order. If all are blank, default to "TREASURE".</td>
+        <td>Asset Class</td>
     </tr>
 </table>
 
