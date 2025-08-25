@@ -1,7 +1,5 @@
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transformation Logic Documentation</title>
@@ -22,65 +20,67 @@
         }
     </style>
 </head>
-<body>
+  <body>
+    <!-- 1) Final Transformations Table -->
+    <section id="final-transformations">
+      <h1>Final Transformations</h1>
+      <table id="final-transformations-table">
+          <tr>
+            <th>Output Attribute</th>
+            <th>Input Attributes Used</th>
+            <th>Transformation Logic</th>
+            <th>Static Mappings Used</th>
+            <th>Extra Information</th>
+          </tr>
+          <!-- One row per output attribute -->
+          <tr>
+            <td class="output-attribute">assetClass</td>
+            <td class="inputs-used">["RptL3Descr", "RptL4Descr", "RptL5Descr"]</td>
+            <td class="transformation-logic">Checks the presence of RptL5Descr, RptL4Descr, and RptL3Descr in order. If present, maps to a corresponding asset class using a static mapping. If none are present, defaults to "TREASURE".</td>
+            <td class="static-mappings">{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
+            <td class="extra-info">N/A</td>
+          </tr>
+          <tr>
+            <td class="output-attribute">lob</td>
+            <td class="inputs-used">["lineOfBusiness"]</td>
+            <td class="transformation-logic">Sets the line of business from the first employee in the list.</td>
+            <td class="static-mappings">{}</td>
+            <td class="extra-info">N/A</td>
+          </tr>
+          <tr>
+            <td class="output-attribute">orgUnit</td>
+            <td class="inputs-used">["country"]</td>
+            <td class="transformation-logic">Sets the organizational unit from the first employee in the list.</td>
+            <td class="static-mappings">{}</td>
+            <td class="extra-info">N/A</td>
+          </tr>
+          <tr>
+            <td class="output-attribute">participants</td>
+            <td class="inputs-used">["employees"]</td>
+            <td class="transformation-logic">Combines the first and last names of all employees into a list of strings.</td>
+            <td class="static-mappings">{}</td>
+            <td class="extra-info">N/A</td>
+          </tr>
+      </table>
+    </section>
 
-<h1>Transformation Logic Documentation</h1>
-
-<h2>Final Output Attributes</h2>
-<table>
-    <tr>
-        <th>Output Attribute</th>
-        <th>Input Attributes Used</th>
-        <th>Transformation Logic</th>
-        <th>Static Mappings Used</th>
-        <th>Extra Information</th>
-    </tr>
-    <tr>
-        <td>Participants</td>
-        <td>Employee.firstName, Employee.lastName</td>
-        <td>Concatenate the first name and last name of each employee in the list to form a list of participant names.</td>
-        <td>{}</td>
-        <td>The participants list is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>Lob</td>
-        <td>Employee.lineOfBusiness</td>
-        <td>Set the line of business from the first employee in the list.</td>
-        <td>{}</td>
-        <td>The lob is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>OrgUnit</td>
-        <td>Employee.country</td>
-        <td>Set the country from the first employee in the list.</td>
-        <td>{}</td>
-        <td>The orgUnit is set in the domain model if the employees list is not empty.</td>
-    </tr>
-    <tr>
-        <td>AssetClass</td>
-        <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
-        <td>Determine the asset class based on the rptL5Descr, rptL4Descr, and rptL3Descr fields of the first employee in the list, in that order of priority. If none of these fields are present, default to "TREASURE".</td>
-        <td>{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
-        <td>The asset class is set in the domain model if the employees list is not empty.</td>
-    </tr>
-</table>
-
-<h2>Intermediate Transformations</h2>
-<table>
-    <tr>
-        <th>Intermediate Output</th>
-        <th>Input Attributes Used</th>
-        <th>Intermediate Transformation Logic</th>
-        <th>Used in Final Output Attribute</th>
-    </tr>
-    <tr>
-        <td>Employees</td>
-        <td>DerivativeTradeDto.employees</td>
-        <td>For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.</td>
-        <td>Participants, Lob, OrgUnit, AssetClass</td>
-    </tr>
-</table>
-
-</body>
+    <!-- 2) Intermediate Transformations Table -->
+    <section id="intermediate-transformations">
+      <h1>Intermediate Transformations</h1>
+      <table id="intermediate-transformations-table">
+          <tr>
+            <th>Intermediate Output</th>
+            <th>Input Attributes Used</th>
+            <th>Intermediate Transformation Logic</th>
+            <th>Final Output Attribute Used In</th>
+          </tr>
+          <tr>
+            <td class="intermediate-output">employees</td>
+            <td class="inputs-used">["employeeId"]</td>
+            <td class="intermediate-logic">Fetches employee details using employee IDs from the DTO.</td>
+            <td class="used-in">["lob", "orgUnit", "participants", "assetClass"]</td>
+          </tr>
+      </table>
+    </section>
+  </body>
 </html>
-```
