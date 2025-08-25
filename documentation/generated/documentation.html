@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +10,11 @@
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
+        table, th, td {
             border: 1px solid black;
-            padding: 8px;
+        }
+        th, td {
+            padding: 10px;
             text-align: left;
         }
         th {
@@ -34,31 +37,31 @@
     </tr>
     <tr>
         <td>Participants</td>
-        <td>Employee First Name, Employee Last Name</td>
-        <td>Concatenate first name and last name of each employee to form a list of participant names.</td>
+        <td>Employee.firstName, Employee.lastName</td>
+        <td>Concatenate the first name and last name of each employee in the list to form a list of participant names.</td>
         <td>{}</td>
-        <td>The participants list is only populated if the employees list is not empty.</td>
+        <td>The participants list is set in the domain model if the employees list is not empty.</td>
     </tr>
     <tr>
-        <td>LOB</td>
-        <td>Employee Line Of Business</td>
-        <td>Set the LOB attribute from the line of business of the first employee in the list.</td>
+        <td>Lob</td>
+        <td>Employee.lineOfBusiness</td>
+        <td>Set the line of business from the first employee in the list.</td>
         <td>{}</td>
-        <td>The LOB attribute is only set if the employees list is not empty.</td>
+        <td>The lob is set in the domain model if the employees list is not empty.</td>
     </tr>
     <tr>
         <td>OrgUnit</td>
-        <td>Employee Country</td>
-        <td>Set the OrgUnit attribute from the country of the first employee in the list.</td>
+        <td>Employee.country</td>
+        <td>Set the country from the first employee in the list.</td>
         <td>{}</td>
-        <td>The OrgUnit attribute is only set if the employees list is not empty.</td>
+        <td>The orgUnit is set in the domain model if the employees list is not empty.</td>
     </tr>
     <tr>
         <td>AssetClass</td>
-        <td>Employee RptL3Descr, Employee RptL4Descr, Employee RptL5Descr</td>
-        <td>Determine the asset class based on the RptL5Descr, RptL4Descr, and RptL3Descr of the first employee in a hierarchical manner. If RptL5Descr is not blank, use it to get the asset class from the mappings. If RptL5Descr is blank, check RptL4Descr, and so on. If all are blank, default to "TREASURE".</td>
+        <td>Employee.rptL3Descr, Employee.rptL4Descr, Employee.rptL5Descr</td>
+        <td>Determine the asset class based on the rptL5Descr, rptL4Descr, and rptL3Descr fields of the first employee in the list, in that order of priority. If none of these fields are present, default to "TREASURE".</td>
         <td>{"mss": "Markets Security", "rc": "Risk and compliance"}</td>
-        <td>The AssetClass attribute is only set if the employees list is not empty.</td>
+        <td>The asset class is set in the domain model if the employees list is not empty.</td>
     </tr>
 </table>
 
@@ -72,11 +75,12 @@
     </tr>
     <tr>
         <td>Employees</td>
-        <td>Employee IDs from DTO</td>
-        <td>For each employee ID in the DTO, fetch the employee details using a filter. If an employee is not found, throw an exception.</td>
-        <td>Participants, LOB, OrgUnit, AssetClass</td>
+        <td>DerivativeTradeDto.employees</td>
+        <td>For each employee ID in the DTO, fetch the employee details using a GraphQL client. If an employee is not found, throw an exception.</td>
+        <td>Participants, Lob, OrgUnit, AssetClass</td>
     </tr>
 </table>
 
 </body>
 </html>
+```
