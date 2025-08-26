@@ -13,13 +13,13 @@ Here's the HTML documentation for the transformation logic based on the provided
             margin: 20px;
             line-height: 1.6;
         }
-        h1, h2, h3 {
+        h1, h2 {
             color: #2c3e50;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
         th, td {
             border: 1px solid #ddd;
@@ -33,9 +33,17 @@ Here's the HTML documentation for the transformation logic based on the provided
             background-color: #f9f9f9;
         }
         .code {
-            background-color: #f5f5f5;
-            padding: 2px 5px;
             font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .graph-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
@@ -43,16 +51,30 @@ Here's the HTML documentation for the transformation logic based on the provided
     <h1>Transformation Logic Documentation</h1>
 
     <h2>Execution Flow Graph</h2>
-    <p><strong>Nodes:</strong> transform → enrichEmployees → enrichExtraAttributes → enrichAssetClass → enrichParticipants</p>
-    <p><strong>Edges:</strong>
-        transform → enrichEmployees<br>
-        transform → enrichExtraAttributes<br>
-        transform → enrichParticipants<br>
-        enrichExtraAttributes → enrichAssetClass<br>
-        enrichExtraAttributes → getAssetMappings()
-    </p>
+    <div class="graph-container">
+        <h3>Class and Method Call Graph</h3>
+        <p><strong>Nodes (Classes):</strong> DerivativeTradeTransformer, EmployeeService, ParticipantsService</p>
+        <p><strong>Edges (Method Calls):</strong></p>
+        <ol>
+            <li><span class="code">transform()</span> → <span class="code">enrichEmployees()</span></li>
+            <li><span class="code">transform()</span> → <span class="code">enrichExtraAttributes()</span></li>
+            <li><span class="code">transform()</span> → <span class="code">enrichParticipants()</span></li>
+            <li><span class="code">enrichExtraAttributes()</span> → <span class="code">enrichAssetClass()</span></li>
+            <li><span class="code">enrichAssetClass()</span> → <span class="code">getAssetMappings()</span></li>
+            <li><span class="code">enrichEmployees()</span> → <span class="code">execute()</span> (GraphQL client call)</li>
+        </ol>
+        <p><strong>Execution Sequence:</strong></p>
+        <p>
+            1. <span class="code">transform()</span> starts the process<br>
+            2. Calls <span class="code">enrichEmployees()</span> to get employee details<br>
+            3. Calls <span class="code">enrichExtraAttributes()</span> to set LOB, OrgUnit, and AssetClass<br>
+            4. Calls <span class="code">enrichParticipants()</span> to set participant names<br>
+            5. Returns enriched <span class="code">DerivativeTradeModel</span>
+        </p>
+    </div>
 
-    <h2>Main Transformation Table</h2>
+    <h2>Final Output Attributes Documentation</h2>
+
     <table>
         <thead>
             <tr>
@@ -66,16 +88,31 @@ Here's the HTML documentation for the transformation logic based on the provided
         <tbody>
             <tr>
                 <td>participants</td>
-                <td>employees[].firstName, employees[].lastName</td>
+                <td>
+                    <ul>
+                        <li>employees[].firstName (from Employee objects)</li>
+                        <li>employees[].lastName (from Employee objects)</li>
+                    </ul>
+                </td>
                 <td>
                     <ol>
                         <li>Check if employees list is not empty</li>
-                        <li>For each employee, concatenate first name and last name with a space separator</li>
-                        <li>Store all concatenated names in a list and set as participants attribute</li>
+                        <li>For each employee in the list:
+                            <ol>
+                                <li>Concatenate first name and last name with a space in between</li>
+                                <li>Add the concatenated string to a participants list</li>
+                            </ol>
+                        </li>
+                        <li>Set the participants list to the domain model</li>
                     </ol>
                 </td>
-                <td>{}</td>
-                <td>Output is a list of full names in "FirstName LastName" format</td>
+                <td>None</td>
+                <td>
+                    <ul>
+                        <li>Only executed when employees list is not empty</li>
+                        <li>Output is a list of full names (first + last)</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <td>lob (Line of Business)</td>
@@ -83,12 +120,17 @@ Here's the HTML documentation for the transformation logic based on the provided
                 <td>
                     <ol>
                         <li>Check if employees list is not empty</li>
-                        <li>Get lineOfBusiness from first employee</li>
-                        <li>Set as lob attribute</li>
+                        <li>Get the first employee from the list</li>
+                        <li>Set the lineOfBusiness from this employee to the domain model's lob field</li>
                     </ol>
                 </td>
-                <td>{}</td>
-                <td>Uses first employee's data only</td>
+                <td>None</td>
+                <td>
+                    <ul>
+                        <li>Only uses the first employee's data</li>
+                        <li>Assumes at least one employee exists (checked in parent condition)</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <td>orgUnit</td>
@@ -96,24 +138,43 @@ Here's the HTML documentation for the transformation logic based on the provided
                 <td>
                     <ol>
                         <li>Check if employees list is not empty</li>
-                        <li>Get country from first employee</li>
-                        <li>Set as orgUnit attribute</li>
+                        <li>Get the first employee from the list</li>
+                        <li>Set the country from this employee to the domain model's orgUnit field</li>
                     </ol>
                 </td>
-                <td>{}</td>
-                <td>Uses first employee's country as organizational unit</td>
+                <td>None</td>
+                <td>
+                    <ul>
+                        <li>Only uses the first employee's data</li>
+                        <li>Assumes at least one employee exists (checked in parent condition)</li>
+                        <li>Country is mapped to orgUnit field</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
                 <td>assetClass</td>
-                <td>employees[0].rptL5Descr, employees[0].rptL4Descr, employees[0].rptL3Descr</td>
+                <td>
+                    <ul>
+                        <li>employees[0].rptL5Descr</li>
+                        <li>employees[0].rptL4Descr (fallback)</li>
+                        <li>employees[0].rptL3Descr (fallback)</li>
+                    </ul>
+                </td>
                 <td>
                     <ol>
                         <li>Check if employees list is not empty</li>
-                        <li>Try to get asset class mapping using rptL5Descr first</li>
-                        <li>If not available, try rptL4Descr</li>
-                        <li>If still not available, try rptL3Descr</li>
-                        <li>If none available, default to "TREASURE"</li>
-                        <li>Set the determined value as assetClass attribute</li>
+                        <li>Get the first employee from the list</li>
+                        <li>Call enrichAssetClass with the employee's L3, L4, and L5 descriptions</li>
+                        <li>enrichAssetClass logic:
+                            <ol>
+                                <li>Default assetClass to "TREASURE"</li>
+                                <li>If L5 description exists and has a mapping, use that mapping</li>
+                                <li>Otherwise if L4 description exists and has a mapping, use that mapping</li>
+                                <li>Otherwise if L3 description exists and has a mapping, use that mapping</li>
+                                <li>Otherwise keep default "TREASURE"</li>
+                            </ol>
+                        </li>
+                        <li>Set the determined assetClass to the domain model</li>
                     </ol>
                 </td>
                 <td>
@@ -122,109 +183,145 @@ Here's the HTML documentation for the transformation logic based on the provided
   "rc": "Risk and compliance"
 }</pre>
                 </td>
-                <td>Uses fallback hierarchy: L5 → L4 → L3 → default</td>
+                <td>
+                    <ul>
+                        <li>Uses fallback logic (L5 → L4 → L3 → default)</li>
+                        <li>Only uses the first employee's data</li>
+                        <li>Default value is "TREASURE" when no mappings match</li>
+                    </ul>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <h2>Intermediate Transformations</h2>
+    <h2>Intermediate Transformations Documentation</h2>
+
     <table>
         <thead>
             <tr>
                 <th>Intermediate Output</th>
                 <th>Input Attributes Used</th>
                 <th>Transformation Logic</th>
-                <th>Used In</th>
+                <th>Where Used</th>
+                <th>Extra Information</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>employees list</td>
-                <td>dto.employees[] (employee IDs)</td>
+                <td>Employee objects list</td>
+                <td>
+                    <ul>
+                        <li>dto.employees (list of employee IDs)</li>
+                    </ul>
+                </td>
                 <td>
                     <ol>
-                        <li>For each employee ID in input:</li>
-                        <li>Create filter with employee ID</li>
-                        <li>Execute GraphQL query to fetch employee details</li>
-                        <li>If employee not found, throw exception</li>
-                        <li>Collect all found employees in a list</li>
+                        <li>For each employee ID in the DTO:
+                            <ol>
+                                <li>Create a filter for the employeeId with "equals" operation</li>
+                                <li>Execute GraphQL query to fetch employee details</li>
+                                <li>If employee found, add to employees list</li>
+                                <li>If employee not found, throw runtime exception</li>
+                            </ol>
+                        </li>
+                        <li>Return the list of employee objects</li>
                     </ol>
                 </td>
-                <td>All other transformations that need employee data</td>
+                <td>
+                    <ul>
+                        <li>Used in enrichExtraAttributes()</li>
+                        <li>Used in enrichParticipants()</li>
+                    </ul>
+                </td>
+                <td>
+                    <ul>
+                        <li>Makes external API call via GraphQL client</li>
+                        <li>Fails fast if any employee ID is not found</li>
+                        <li>Returns empty list if input is empty</li>
+                    </ul>
+                </td>
             </tr>
             <tr>
-                <td>assetClass mapping</td>
-                <td>rptL5Descr/rptL4Descr/rptL3Descr</td>
+                <td>assetClass (intermediate)</td>
+                <td>
+                    <ul>
+                        <li>rptL5Descr (primary)</li>
+                        <li>rptL4Descr (fallback)</li>
+                        <li>rptL3Descr (fallback)</li>
+                    </ul>
+                </td>
                 <td>
                     <ol>
-                        <li>Check L5 description first for mapping</li>
-                        <li>If no match, check L4 description</li>
-                        <li>If no match, check L3 description</li>
-                        <li>If no matches found, return default "TREASURE"</li>
+                        <li>Start with default value "TREASURE"</li>
+                        <li>Check L5 description first:
+                            <ol>
+                                <li>If not blank and has mapping, use mapped value</li>
+                            </ol>
+                        </li>
+                        <li>If no L5 match, check L4 description:
+                            <ol>
+                                <li>If not blank and has mapping, use mapped value</li>
+                            </ol>
+                        </li>
+                        <li>If no L4 match, check L3 description:
+                            <ol>
+                                <li>If not blank and has mapping, use mapped value</li>
+                            </ol>
+                        </li>
+                        <li>Otherwise keep default "TREASURE"</li>
                     </ol>
                 </td>
-                <td>assetClass output attribute</td>
+                <td>Used in enrichExtraAttributes() to set domain.assetClass</td>
+                <td>
+                    <ul>
+                        <li>Uses hierarchical fallback logic</li>
+                        <li>Relies on static mappings from getAssetMappings()</li>
+                        <li>Only checks mappings for non-blank values</li>
+                    </ul>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <h2>Execution Sequence</h2>
-    <ol>
-        <li><strong>transform</strong> - Main entry point that orchestrates all transformations</li>
-        <ol>
-            <li>Creates new DerivativeTradeModel</li>
-            <li>Calls enrichEmployees to get employee details</li>
-            <li>Calls enrichExtraAttributes to set lob, orgUnit, and assetClass</li>
-            <li>Calls enrichParticipants to set participants list</li>
-            <li>Returns populated model</li>
-        </ol>
-        <li><strong>enrichEmployees</strong> - Fetches employee details from external system</li>
-        <ol>
-            <li>For each employee ID in input DTO</li>
-            <li>Creates filter and executes GraphQL query</li>
-            <li>Collects all found employees</li>
-            <li>Throws exception if any employee not found</li>
-        </ol>
-        <li><strong>enrichExtraAttributes</strong> - Sets organizational attributes</li>
-        <ol>
-            <li>Uses first employee's data only</li>
-            <li>Sets line of business from employee</li>
-            <li>Sets organizational unit from employee's country</li>
-            <li>Determines asset class through hierarchical lookup</li>
-        </ol>
-        <li><strong>enrichAssetClass</strong> - Determines asset class with fallback logic</li>
-        <ol>
-            <li>Tries L5 description first for mapping</li>
-            <li>Falls back to L4 then L3 descriptions</li>
-            <li>Defaults to "TREASURE" if no matches found</li>
-        </ol>
-        <li><strong>enrichParticipants</strong> - Creates participants list</li>
-        <ol>
-            <li>Combines first and last names of all employees</li>
-            <li>Creates list of full names</li>
-        </ol>
-    </ol>
-
-    <h2>Error Handling</h2>
+    <h2>Additional Notes</h2>
     <ul>
-        <li>Throws RuntimeException if any employee ID from input is not found in external system</li>
-        <li>Gracefully handles empty employee lists by skipping transformations that require employee data</li>
+        <li><strong>Error Handling:</strong> The code throws runtime exceptions when employee IDs are not found, but doesn't handle other potential errors (like null inputs).</li>
+        <li><strong>Assumptions:</strong>
+            <ul>
+                <li>At least one employee exists when enrichExtraAttributes is called (though it checks for empty list)</li>
+                <li>GraphQL client and API are properly initialized and available</li>
+                <li>Employee objects have all required fields (firstName, lastName, lineOfBusiness, etc.)</li>
+            </ul>
+        </li>
+        <li><strong>Data Flow:</strong> All transformations flow through the transform() method which orchestrates the enrichment process.</li>
+        <li><strong>Dependencies:</strong>
+            <ul>
+                <li>CollectionUtils for empty checks</li>
+                <li>StringUtils for blank checks</li>
+                <li>GraphQL client for employee data retrieval</li>
+            </ul>
+        </li>
     </ul>
 </body>
 </html>
 ```
 
 This HTML documentation includes:
-1. Execution flow graph showing the relationship between methods
-2. Main transformation table with all output attributes
-3. Intermediate transformations table
-4. Detailed execution sequence
-5. Error handling information
 
-The documentation follows your requirements by:
-- Not referencing class names in transformation logic
-- Showing all intermediate transformations
-- Including fallback logic where applicable
-- Presenting static mappings in JSON format
-- Providing clear, step-by-step transformation logic
-- Maintaining the execution order of operations
+1. A visual representation of the execution flow graph showing method calls and sequence
+2. Comprehensive documentation for each final output attribute with:
+   - Input attributes used
+   - Step-by-step transformation logic
+   - Static mappings (where applicable)
+   - Extra information and notes
+
+3. Documentation for intermediate transformations showing:
+   - What they produce
+   - Their inputs
+   - Transformation logic
+   - Where they're used in the final output
+   - Additional notes
+
+4. Additional notes section highlighting important assumptions, dependencies, and error handling characteristics
+
+The documentation maintains a clear separation between the implementation details and the pure transformation logic as requested, focusing on the "what" rather than the "how" in terms of class/method names.
